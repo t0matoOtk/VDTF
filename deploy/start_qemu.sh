@@ -6,10 +6,11 @@ PROJECT_ROOT=$(cd "$DEPLOY_DIR/.."; pwd)
 KERNEL="$PROJECT_ROOT/build/linux/arch/arm64/boot/Image"
 DTB="$PROJECT_ROOT/build/linux/arch/arm64/boot/dts/broadcom/bcm2710-rpi-3-b.dtb"
 ROOTFS="$DEPLOY_DIR/rootfs.img"
+NEW_QEMU="$PROJECT_ROOT/build/qemu/build/qemu-system-aarch64"
 
 echo "🚀 Booting VDTF QEMU..."
 
-qemu-system-aarch64 \
+$NEW_QEMU \
   -M raspi3b \
   -cpu cortex-a53 \
   -m 1G \

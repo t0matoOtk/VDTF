@@ -26,6 +26,13 @@ Package the generated root filesystem into an ext4 disk image:
 ./scripts/make_image.sh
 ```
 
+## 4. Build Custom Qemu & Hardware
+
+```bash 
+./scripts/setup_qemu.sh
+```
+
+
 ## 4. Launch QEMU Emulator
 
 ```bash
