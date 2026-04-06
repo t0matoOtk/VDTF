@@ -17,6 +17,7 @@
 #include "hw/arm/raspi_platform.h"
 #include "hw/sensor/bme280.h"
 #include "hw/i2c/i2c.h"
+#include "hw/ssi/ssi.h"
 #include "system/system.h"
 
 /* Peripheral base address on the VC (GPU) system bus */
@@ -168,6 +169,8 @@ static void raspi_peripherals_base_init(Object *obj)
     /* SPI */
     object_initialize_child(obj, "bcm2835-spi0", &s->spi[0],
                             TYPE_BCM2835_SPI);
+
+    /* BME280 SPI */
 
     /* I2C */
     object_initialize_child(obj, "bcm2835-i2c0", &s->i2c[0],
@@ -484,6 +487,9 @@ void bcm_soc_peripherals_common_realize(DeviceState *dev, Error **errp)
                        qdev_get_gpio_in_named(DEVICE(&s->ic),
                                               BCM2835_IC_GPU_IRQ,
                                               INTERRUPT_SPI));
+
+    /* BME280 SPI */
+    ssi_create_peripheral(s->spi[0].bus, TYPE_BME280_SPI);
 
     /* I2C */
     for (n = 0; n < 3; n++) {

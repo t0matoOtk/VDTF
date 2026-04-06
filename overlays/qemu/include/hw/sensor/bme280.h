@@ -40,3 +40,5 @@ struct BME280State {
 };
 
 #endif
+
+#define TYPE_BME280_SPI "bme280-spi"
