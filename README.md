@@ -1,6 +1,7 @@
 # VDTF - Virtual Device Test Framework
-A Linux driver development and benchmarking platform built on QEMU raspi3b emulation.
 [Note](https://hackmd.io/@UVDBF0TOR4uSkq00h3t9DQ/SkCfAgIjZx)
+A Linux driver development and benchmarking platform built on QEMU raspi3b emulation.
+
 ## What it does
 
 - Emulates BME280 sensor (I2C + SPI) in QEMU
