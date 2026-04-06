@@ -1,63 +1,53 @@
-# Quick Start
+# VDTF - Virtual Device Test Framework
 
-## 1. Environment Setup
+A Linux driver development and benchmarking platform built on QEMU raspi3b emulation.
 
-Ensure your Linux host (Ubuntu 22.04 or later recommended) has the required cross-compilation tools installed:
+## What it does
 
+- Emulates BME280 sensor (I2C + SPI) in QEMU
+- Implements custom kernel drivers for both interfaces
+- Benchmarks latency, throughput, and CPU usage
+
+## Quick Start
 ```bash
-sudo apt update
-sudo apt install git bc bison flex libssl-dev make libc6-dev \
-libncurses5-dev crossbuild-essential-arm64 qemu-system-arm
+./scripts/setup.sh        # build kernel + rootfs
+./scripts/setup_qemu.sh   # build QEMU with custom devices
+./scripts/make_image.sh   # package image
+./deploy/start_qemu.sh    # boot
 ```
 
-## 2. Initialize and Build
-
-Run the setup script. It will download the Linux kernel and BusyBox source code, apply the configurations in `configs/`, and complete the build process.
-
+## In guest
 ```bash
-./scripts/setup.sh
+# upstream kernel driver
+/root/test/load_kernel.sh
+/root/test/bench kernel
+
+# custom driver
+/root/test/load_simple.sh
+/root/test/bench simple
 ```
 
-## 3. Build RootFS Image
+## Results
 
-Package the generated root filesystem into an ext4 disk image:
+### I2C vs SPI (upstream driver)
 
-```bash
-./scripts/make_image.sh
-```
+| | I2C | SPI |
+|--|-----|-----|
+| avg | 264 us | 90 us |
+| p99 | 832 us | 334 us |
+| throughput | 3787 /sec | 11111 /sec |
 
-## 4. Build Custom Qemu & Hardware
+SPI is ~3x faster due to no ACK overhead and full-duplex communication.
 
-```bash 
-./scripts/setup_qemu.sh
-```
+### Custom vs Upstream driver
 
+| | I2C kernel | I2C simple | SPI kernel | SPI simple |
+|--|-----------|------------|-----------|------------|
+| avg | 264 us | 761 us | 90 us | 140 us |
+| throughput | 3787 /sec | 1314 /sec | 11111 /sec | 7142 /sec |
 
-## 4. Launch QEMU Emulator
+Upstream driver is faster due to regmap caching and IIO framework optimizations.
 
-```bash
-./deploy/start_qemu.sh
-```
+## QEMU Limitations
 
----
-
-## Project Structure
-
-* **configs/**
-  Contains custom configurations for the Linux kernel (`linux.config`) and BusyBox (`busybox.config`).
-
-* **rootfs_overlay/**
-  Stores custom system files, such as `etc/inittab` and `etc/init.d/rcS`.
-
-* **scripts/**
-  Includes scripts for environment setup, automated builds, and image generation.
-
-* **deploy/**
-  Contains launch scripts and the final generated images.
-  
-* **build/** 
-  (Generated) Source code and intermediate RootFS directory.
-  
-* **overlays/**
-  Custom system files (e.g., etc/inittab, rcS) to be merged into RootFS.
-
+Timing reflects software overhead only. On real hardware, SPI advantage would be more pronounced (100kHz vs 10MHz clock).
