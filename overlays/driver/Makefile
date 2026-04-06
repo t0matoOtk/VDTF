@@ -1,4 +1,4 @@
-obj-m := bme280_simple.o
+obj-m := bme280_simple.o bme280_simple_spi.o
 
 KDIR := /mnt/code/VDTF2/build/linux
 ARCH := arm64
